@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".activities.CreateLocationActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Criar Novo Local"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="16dp" />
+
+        <EditText
+            android:id="@+id/locationNameEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/location_name_hint"
+            android:layout_marginBottom="16dp" />
+
+        <RadioGroup
+            android:id="@+id/locationTypeRadioGroup"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="16dp">
+            <RadioButton
+                android:id="@+id/radioGps"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/location_type_gps"
+                android:checked="true"
+                android:layout_marginEnd="16dp" />
+            <RadioButton
+                android:id="@+id/radioWifi"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/location_type_wifi" />
+        </RadioGroup>
+
+        <!-- Layout GPS -->
+        <LinearLayout
+            android:id="@+id/gpsLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <EditText
+                android:id="@+id/latitudeEditText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/latitude_hint"
+                android:inputType="numberDecimal"
+                android:layout_marginBottom="8dp" />
+            <EditText
+                android:id="@+id/longitudeEditText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/longitude_hint"
+                android:inputType="numberDecimal"
+                android:layout_marginBottom="8dp" />
+            <EditText
+                android:id="@+id/radiusEditText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/radius_hint"
+                android:inputType="number"
+                android:layout_marginBottom="16dp" />
+            <Button
+                android:id="@+id/captureGpsButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Capturar GPS Atual"
+                android:layout_marginBottom="16dp" />
+        </LinearLayout>
+
+        <!-- Layout WiFi -->
+        <LinearLayout
+            android:id="@+id/wifiLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone">
+            <EditText
+                android:id="@+id/wifiIdsEditText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/wifi_ids_hint"
+                android:lines="3"
+                android:gravity="top"
+                android:layout_marginBottom="16dp" />
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/saveLocationButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/save_button" />
+
+    </LinearLayout>
+</ScrollView>

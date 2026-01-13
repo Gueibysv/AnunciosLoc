@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"
+    tools:context=".activities.ViewAdActivity">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Detalhes do Anúncio"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="16dp" />
+
+    <TextView
+        android:id="@+id/adTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="18sp"
+        android:padding="8dp"
+        android:background="#EFEFEF"
+        android:layout_marginBottom="16dp"
+        android:text="[Texto do Anúncio]" />
+
+    <TextView
+        android:id="@+id/editorTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Editor: [Nome]"
+        android:layout_marginBottom="4dp" />
+
+    <TextView
+        android:id="@+id/localTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Local de Destino: [Local]"
+        android:layout_marginBottom="4dp" />
+
+    <TextView
+        android:id="@+id/timeTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Publicado em: [Data/Hora]"
+        android:layout_marginBottom="16dp" />
+
+    <TextView
+        android:id="@+id/policyTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textStyle="italic"
+        android:text="Política: [Tipo e Restrições]"
+        android:layout_marginBottom="4dp" />
+
+    <TextView
+        android:id="@+id/deliveryTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textStyle="italic"
+        android:text="Modo de Entrega: [Modo]"
+        android:layout_marginBottom="16dp" />
+
+    <!-- Botão de Receber Mensagem (Simulado) -->
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Receber Mensagem (Simulado)"
+        android:enabled="false" />
+
+</LinearLayout>

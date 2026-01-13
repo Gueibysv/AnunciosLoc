@@ -1,0 +1,33 @@
+<resources>
+    <string name="app_name">AnunciosLoc</string>
+    <string name="location_status">Aguardando localização...</string>
+    <string name="get_location_button">Obter Localização</string>
+    <string name="login_title">Login no AnunciosLoc</string>
+    <string name="username_hint">Nome de Utilizador</string>
+    <string name="password_hint">Palavra-passe</string>
+    <string name="login_button">Entrar</string>
+    <string name="register_button">Registar</string>
+    <string name="logout_button">Sair</string>
+    <string name="menu_locations">Gerir Locais</string>
+    <string name="menu_ads">Gerir Anúncios</string>
+    <string name="menu_profile">Perfil</string>
+    <string name="map_title">Mapa de Locais</string>
+    <string name="add_location_button">Adicionar Local</string>
+    <string name="location_name_hint">Nome do Local (e.g., Largo da Independência)</string>
+    <string name="location_type_gps">Coordenadas GPS</string>
+    <string name="location_type_wifi">IDs de WiFi</string>
+    <string name="latitude_hint">Latitude</string>
+    <string name="longitude_hint">Longitude</string>
+    <string name="radius_hint">Raio (metros)</string>
+    <string name="wifi_ids_hint">Lista de IDs de WiFi (separados por vírgula)</string>
+    <string name="save_button">Guardar</string>
+    <string name="ad_text_hint">Texto do Anúncio</string>
+    <string name="ad_policy_whitelist">Whitelist</string>
+    <string name="ad_policy_blacklist">Blacklist</string>
+    <string name="ad_delivery_centralized">Centralizado</string>
+    <string name="ad_delivery_decentralized">Descentralizado</string>
+    <string name="publish_ad_button">Publicar Anúncio</string>
+    <string name="key_value_hint">Chave=Valor (e.g., Profissao=Estudante)</string>
+    <string name="add_key_button">Adicionar Chave</string>
+    <string name="profile_keys_title">Chaves de Perfil</string>
+</resources>
