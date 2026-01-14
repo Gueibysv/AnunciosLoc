@@ -4,7 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
-import com.anunciosloc.anunciosloc.Auth.*;
+
 
 
 import com.anunciosloc.anunciosloc.dto.LoginResponseDTO;
@@ -22,7 +22,7 @@ public class AuthController {
 
      private final UserRepository userRepo;
     private final PasswordEncoder passwordEncoder;
-    private final JwtService jwtService;
+    
 
     @PostMapping("/login")
     public LoginResponseDTO login(@RequestBody LoginResponseDTO req) {
@@ -40,11 +40,10 @@ public class AuthController {
             throw new RuntimeException("Password incorreta");
         }
 
-        String token = jwtService.generateToken(user);
 
         log.info("Login bem-sucedido | userId={}", user.getId());
 
-        return new LoginResponseDTO(token, user.getId(), user.getUsername(), user.getPassword());
+        return new LoginResponseDTO(user.getId(), user.getUsername(), user.getPassword());
     }
 
     @PostMapping("/register")
