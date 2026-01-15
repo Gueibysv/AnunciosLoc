@@ -11,49 +11,22 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.anunciosloc.R;
-import com.anunciosloc.data.MockDataSource;
-import com.anunciosloc.models.Local;
+import com.anunciosloc.dto.LocationDTO;
 
 import java.util.List;
 
-public class LocationAdapter extends RecyclerView.Adapter<LocationAdapter.LocationViewHolder> {
+public class LocationAdapter
+        extends RecyclerView.Adapter<LocationAdapter.LocationViewHolder> {
 
-    private List<Local> locationList;
+    private final List<LocationDTO> locationList;
 
-    public LocationAdapter(List<Local> locationList) {
+    public LocationAdapter(List<LocationDTO> locationList) {
         this.locationList = locationList;
     }
 
-    @NonNull
-    @Override
-    public LocationViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_location, parent, false);
-        return new LocationViewHolder(view);
-    }
-
-    @Override
-    public void onBindViewHolder(@NonNull LocationViewHolder holder, int position) {
-        Local local = locationList.get(position);
-        holder.locationName.setText(local.getNome());
-        holder.locationDetails.setText(local.toString());
-
-        holder.removeButton.setOnClickListener(v -> {
-            if (MockDataSource.removeLocation(local.getId())) {
-                locationList.remove(position);
-                notifyItemRemoved(position);
-                Toast.makeText(v.getContext(), "Local removido: " + local.getNome(), Toast.LENGTH_SHORT).show();
-            } else {
-                Toast.makeText(v.getContext(), "Erro ao remover local.", Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
-    @Override
-    public int getItemCount() {
-        return locationList.size();
-    }
-
+    // ================= VIEW HOLDER =================
     public static class LocationViewHolder extends RecyclerView.ViewHolder {
+
         TextView locationName;
         TextView locationDetails;
         Button removeButton;
@@ -64,5 +37,58 @@ public class LocationAdapter extends RecyclerView.Adapter<LocationAdapter.Locati
             locationDetails = itemView.findViewById(R.id.locationDetailsTextView);
             removeButton = itemView.findViewById(R.id.removeLocationButton);
         }
+    }
+    // =================================================
+
+    @NonNull
+    @Override
+    public LocationViewHolder onCreateViewHolder(
+            @NonNull ViewGroup parent,
+            int viewType
+    ) {
+        View view = LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.item_location, parent, false);
+        return new LocationViewHolder(view);
+    }
+
+    @Override
+    public void onBindViewHolder(
+            @NonNull LocationViewHolder holder,
+            int position
+    ) {
+        LocationDTO loc = locationList.get(position);
+
+        holder.locationName.setText(loc.nome);
+
+        if ("GPS".equalsIgnoreCase(loc.tipoCoordenada)) {
+            holder.locationDetails.setText(
+                    "GPS • Lat: " + loc.latitude +
+                            " | Lon: " + loc.longitude +
+                            " | Raio: " + loc.raioMetros + "m"
+            );
+        } else {
+            holder.locationDetails.setText(
+                    "Wi-Fi • " +
+                            (loc.wifiSSIDs != null ? loc.wifiSSIDs.size() : 0) +
+                            " redes"
+            );
+        }
+
+        holder.removeButton.setOnClickListener(v -> {
+            int pos = holder.getAdapterPosition();
+            locationList.remove(pos);
+            notifyItemRemoved(pos);
+
+            Toast.makeText(
+                    v.getContext(),
+                    "Local removido da lista",
+                    Toast.LENGTH_SHORT
+            ).show();
+        });
+    }
+
+    @Override
+    public int getItemCount() {
+        return locationList.size();
     }
 }

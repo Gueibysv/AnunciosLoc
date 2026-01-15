@@ -3,6 +3,7 @@ package com.anunciosloc.activities;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -11,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.anunciosloc.R;
 import com.anunciosloc.adapters.LocationAdapter;
 import com.anunciosloc.data.MockDataSource;
+import com.anunciosloc.network.LocationService;
 
 public class LocationManagementActivity extends AppCompatActivity {
 
@@ -34,8 +36,25 @@ public class LocationManagementActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        // Recarrega a lista sempre que a Activity volta ao primeiro plano
-        adapter = new LocationAdapter(MockDataSource.getLocations());
-        locationsRecyclerView.setAdapter(adapter);
+
+        new Thread(() -> {
+            try {
+                var locations = LocationService.getLocations();
+
+                runOnUiThread(() -> {
+                    adapter = new LocationAdapter(locations);
+                    locationsRecyclerView.setAdapter(adapter);
+                });
+
+            } catch (Exception e) {
+                runOnUiThread(() ->
+                        Toast.makeText(this,
+                                "Erro ao carregar locais",
+                                Toast.LENGTH_LONG).show()
+                );
+            }
+        }).start();
     }
+
+
 }

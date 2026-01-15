@@ -29,11 +29,11 @@ public class MockDataSource {
         users.put("bob", "5678");
 
         // Locais simulados (GPS)
-        locations.add(new Local("L1", "Largo da Independência", 38.7343829, -9.1403882, 20.0));
-        locations.add(new Local("L2", "Belas Shopping", 38.7500000, -9.1500000, 50.0));
+        locations.add(new Local(1, "Largo da Independência", 38.7343829, -9.1403882, 20.0));
+        locations.add(new Local(1, "Belas Shopping", 38.7500000, -9.1500000, 50.0));
 
         // Locais simulados (WiFi)
-        locations.add(new Local("L3", "Ginásio do Camama I", Arrays.asList("WIFI_GYM_1", "WIFI_GYM_2")));
+        locations.add(new Local(1, "Ginásio do Camama I", Arrays.asList("WIFI_GYM_1", "WIFI_GYM_2")));
 
         // Anúncios simulados
         Map<String, String> policy1 = new HashMap<>();
@@ -81,10 +81,6 @@ public class MockDataSource {
 
     public static void addLocation(Local local) {
         locations.add(local);
-    }
-
-    public static boolean removeLocation(String localId) {
-        return locations.removeIf(local -> local.getId().equals(localId));
     }
 
     // --- Funções de Anúncios (F4, F5) ---

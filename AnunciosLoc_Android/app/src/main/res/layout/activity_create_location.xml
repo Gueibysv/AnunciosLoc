@@ -3,106 +3,125 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:fillViewport="true"
     tools:context=".activities.CreateLocationActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:orientation="vertical"
-        android:padding="16dp">
+        android:gravity="center_horizontal"
+        android:padding="20dp">
 
+        <!-- TÍTULO -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Criar Novo Local"
-            android:textSize="24sp"
+            android:textSize="26sp"
             android:textStyle="bold"
-            android:layout_marginBottom="16dp" />
+            android:layout_marginBottom="24dp" />
 
+        <!-- NOME DO LOCAL -->
         <EditText
             android:id="@+id/locationNameEditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/location_name_hint"
-            android:layout_marginBottom="16dp" />
+            android:hint="Nome do Local"
+            android:textSize="16sp"
+            android:padding="14dp"
+            android:background="@android:drawable/edit_text"
+            android:layout_marginBottom="24dp" />
 
+        <!-- TIPO DE LOCAL -->
         <RadioGroup
             android:id="@+id/locationTypeRadioGroup"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:layout_marginBottom="16dp">
+            android:gravity="center"
+            android:layout_marginBottom="24dp">
+
             <RadioButton
                 android:id="@+id/radioGps"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/location_type_gps"
+                android:text="GPS"
                 android:checked="true"
-                android:layout_marginEnd="16dp" />
+                android:layout_marginEnd="24dp" />
+
             <RadioButton
                 android:id="@+id/radioWifi"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/location_type_wifi" />
+                android:text="Wi-Fi" />
         </RadioGroup>
 
-        <!-- Layout GPS -->
+        <!-- GPS -->
         <LinearLayout
             android:id="@+id/gpsLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:layout_marginBottom="24dp">
+
             <EditText
                 android:id="@+id/latitudeEditText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/latitude_hint"
+                android:hint="Latitude"
                 android:inputType="numberDecimal"
-                android:layout_marginBottom="8dp" />
+                android:layout_marginBottom="12dp" />
+
             <EditText
                 android:id="@+id/longitudeEditText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/longitude_hint"
+                android:hint="Longitude"
                 android:inputType="numberDecimal"
-                android:layout_marginBottom="8dp" />
+                android:layout_marginBottom="12dp" />
+
             <EditText
                 android:id="@+id/radiusEditText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/radius_hint"
+                android:hint="Raio (metros)"
                 android:inputType="number"
                 android:layout_marginBottom="16dp" />
+
             <Button
                 android:id="@+id/captureGpsButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Capturar GPS Atual"
-                android:layout_marginBottom="16dp" />
+                android:text="Capturar Localização Atual" />
         </LinearLayout>
 
-        <!-- Layout WiFi -->
+        <!-- WIFI -->
         <LinearLayout
             android:id="@+id/wifiLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:visibility="gone">
+            android:visibility="gone"
+            android:layout_marginBottom="24dp">
+
             <EditText
                 android:id="@+id/wifiIdsEditText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/wifi_ids_hint"
-                android:lines="3"
+                android:hint="SSIDs Wi-Fi (separados por vírgula)"
+                android:minLines="3"
                 android:gravity="top"
                 android:layout_marginBottom="16dp" />
         </LinearLayout>
 
+        <!-- GUARDAR -->
         <Button
             android:id="@+id/saveLocationButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/save_button" />
+            android:text="Guardar Local"
+            android:textSize="16sp" />
 
     </LinearLayout>
 </ScrollView>

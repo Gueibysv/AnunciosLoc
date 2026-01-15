@@ -1,30 +1,33 @@
 package com.anunciosloc.utils;
 
-import com.anunciosloc.data.MockDataSource;
+import android.content.Context;
+import android.content.SharedPreferences;
 
-/**
- * Classe utilitária para gerir o estado da sessão do utilizador.
- * Em um projeto real, usaria SharedPreferences ou um armazenamento seguro.
- */
 public class SessionManager {
-    private static String currentSessionId = null;
 
-    public static void createSession(String sessionId) {
-        currentSessionId = sessionId;
+    private static final String PREF = "anunciosloc_session";
+    private static final String KEY_USER_ID = "user_id";
+    private static final String KEY_USERNAME = "username";
+
+    public static void createSession(Context ctx, Long id, String username) {
+        SharedPreferences sp = ctx.getSharedPreferences(PREF, Context.MODE_PRIVATE);
+        sp.edit()
+                .putLong(KEY_USER_ID, id)
+                .putString(KEY_USERNAME, username)
+                .apply();
     }
 
-    public static void clearSession() {
-        if (currentSessionId != null) {
-            MockDataSource.logout(currentSessionId);
-        }
-        currentSessionId = null;
+    public static boolean isLoggedIn(Context ctx) {
+        SharedPreferences sp = ctx.getSharedPreferences(PREF, Context.MODE_PRIVATE);
+        return sp.contains(KEY_USER_ID);
     }
 
-    public static String getCurrentSessionId() {
-        return currentSessionId;
+    public static void clear(Context ctx) {
+        ctx.getSharedPreferences(PREF, Context.MODE_PRIVATE)
+                .edit().clear().apply();
     }
-
-    public static boolean isLoggedIn() {
-        return currentSessionId != null && MockDataSource.isAuthenticated(currentSessionId);
+    public static String getUsername(Context ctx) {
+        SharedPreferences sp = ctx.getSharedPreferences(PREF, Context.MODE_PRIVATE);
+        return sp.getString(KEY_USERNAME, null);
     }
 }

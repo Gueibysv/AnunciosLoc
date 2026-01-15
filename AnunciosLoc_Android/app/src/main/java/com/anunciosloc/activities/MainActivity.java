@@ -53,7 +53,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         setContentView(R.layout.activity_main);
 
         // Verifica se o utilizador está logado
-        if (!SessionManager.isLoggedIn()) {
+        if (!SessionManager.isLoggedIn(this)) {
             Intent intent = new Intent(this, LoginActivity.class);
             startActivity(intent);
             finish();
@@ -298,7 +298,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             startActivity(new Intent(this, ProfileActivity.class));
             return true;
         } else if (id == R.id.action_logout) {
-            SessionManager.clearSession();
+            SessionManager.clear(this);
             Intent intent = new Intent(this, LoginActivity.class);
             startActivity(intent);
             finish();

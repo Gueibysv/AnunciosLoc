@@ -18,7 +18,10 @@ import androidx.core.content.ContextCompat;
 
 import com.anunciosloc.R;
 import com.anunciosloc.data.MockDataSource;
+import com.anunciosloc.dto.LocationRequestDTO;
 import com.anunciosloc.models.Local;
+import com.anunciosloc.network.LocationService;
+import com.anunciosloc.utils.SessionManager;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -121,42 +124,61 @@ public class CreateLocationActivity extends AppCompatActivity {
     }
 
     private void saveLocation() {
+
         String name = locationNameEditText.getText().toString().trim();
         if (name.isEmpty()) {
             Toast.makeText(this, "O nome do local é obrigatório.", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        Local newLocal = null;
-        String id = UUID.randomUUID().toString();
+        LocationRequestDTO dto = new LocationRequestDTO();
+        dto.nome = name;
+        dto.username = SessionManager.getUsername(this);
+
+        if (dto.username == null) {
+            Toast.makeText(this, "Sessão inválida", Toast.LENGTH_LONG).show();
+            return;
+        }
 
         if (locationTypeRadioGroup.getCheckedRadioButtonId() == R.id.radioGps) {
             try {
-                double lat = Double.parseDouble(latitudeEditText.getText().toString());
-                double lon = Double.parseDouble(longitudeEditText.getText().toString());
-                double radius = Double.parseDouble(radiusEditText.getText().toString());
-                newLocal = new Local(id, name, lat, lon, radius);
+                dto.tipoCoordenada = "GPS";
+                dto.latitude = Double.parseDouble(latitudeEditText.getText().toString());
+                dto.longitude = Double.parseDouble(longitudeEditText.getText().toString());
+                dto.raioMetros = Double.parseDouble(radiusEditText.getText().toString());
             } catch (NumberFormatException e) {
                 Toast.makeText(this, "Dados GPS inválidos.", Toast.LENGTH_SHORT).show();
                 return;
             }
-        } else if (locationTypeRadioGroup.getCheckedRadioButtonId() == R.id.radioWifi) {
-            String wifiIdsText = wifiIdsEditText.getText().toString().trim();
-            if (wifiIdsText.isEmpty()) {
-                Toast.makeText(this, "IDs de WiFi são obrigatórios.", Toast.LENGTH_SHORT).show();
-                return;
-            }
-            List<String> wifiIds = Arrays.stream(wifiIdsText.split(","))
+        }
+
+        else if (locationTypeRadioGroup.getCheckedRadioButtonId() == R.id.radioWifi) {
+            dto.tipoCoordenada = "WIFI";
+            dto.latitude = null;
+            dto.longitude = null;
+            dto.raioMetros = null;
+            dto.wifiSSIDs = Arrays.stream(
+                            wifiIdsEditText.getText().toString().split(","))
                     .map(String::trim)
                     .filter(s -> !s.isEmpty())
                     .collect(Collectors.toList());
-            newLocal = new Local(id, name, wifiIds);
         }
 
-        if (newLocal != null) {
-            MockDataSource.addLocation(newLocal);
-            Toast.makeText(this, "Local '" + name + "' guardado com sucesso!", Toast.LENGTH_LONG).show();
-            finish();
-        }
+        new Thread(() -> {
+            try {
+                LocationService.create(dto);
+
+                runOnUiThread(() -> {
+                    Toast.makeText(this, "Local criado com sucesso!", Toast.LENGTH_LONG).show();
+                    finish();
+                });
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                runOnUiThread(() ->
+                        Toast.makeText(this, "Erro ao guardar local", Toast.LENGTH_LONG).show()
+                );
+            }
+        }).start();
     }
 }

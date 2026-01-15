@@ -2,7 +2,7 @@ package com.anunciosloc.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -10,90 +10,104 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.anunciosloc.R;
-import com.anunciosloc.data.MockDataSource;
+import com.anunciosloc.dto.UserDTO;
+import com.anunciosloc.network.AuthService;
 import com.anunciosloc.utils.SessionManager;
 
 public class LoginActivity extends AppCompatActivity {
 
+    private static final String TAG = "LOGIN_FLOW";
+
     private EditText usernameEditText;
     private EditText passwordEditText;
-    private Button loginButton;
-    private Button registerButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        // Se já estiver logado, redireciona para a tela principal
-        if (SessionManager.isLoggedIn()) {
-            navigateToMainActivity();
+        Log.d(TAG, "LoginActivity criada");
+
+        if (SessionManager.isLoggedIn(this)) {
+            Log.d(TAG, "Utilizador já logado, indo para MainActivity");
+            startActivity(new Intent(this, MainActivity.class));
+            finish();
             return;
         }
 
         usernameEditText = findViewById(R.id.usernameEditText);
         passwordEditText = findViewById(R.id.passwordEditText);
-        loginButton = findViewById(R.id.loginButton);
-        registerButton = findViewById(R.id.registerButton);
+        Button loginButton = findViewById(R.id.loginButton);
 
-        loginButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                performLogin();
-            }
+        loginButton.setOnClickListener(v -> {
+            Log.d(TAG, "Botão LOGIN clicado");
+            login();
         });
+        Button registerButton = findViewById(R.id.registerButton);
 
-        registerButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                performRegistration();
-            }
+        registerButton.setOnClickListener(v -> {
+            Log.d(TAG, "Botão REGISTER clicado");
+            register();
         });
     }
 
-    private void performLogin() {
+    private void login() {
+
+        String username = usernameEditText.getText().toString().trim();
+        String password = passwordEditText.getText().toString().trim();
+
+        Log.d(TAG, "Login clicked: " + username);
+
+        new Thread(() -> {
+            try {
+                UserDTO user = AuthService.login(username, password);
+
+                runOnUiThread(() -> {
+                    SessionManager.createSession(this, user.userId, user.username);
+                    Toast.makeText(this, "Login OK", Toast.LENGTH_SHORT).show();
+                    startActivity(new Intent(this, MainActivity.class));
+                    finish();
+                });
+
+            } catch (Exception e) {
+                Log.e(TAG, "LOGIN ERROR", e);
+                runOnUiThread(() ->
+                        Toast.makeText(this, "Erro: " + e.getClass().getSimpleName(), Toast.LENGTH_LONG).show()
+                );
+            }
+        }).start();
+    }
+
+    private void register() {
+
         String username = usernameEditText.getText().toString().trim();
         String password = passwordEditText.getText().toString().trim();
 
         if (username.isEmpty() || password.isEmpty()) {
-            Toast.makeText(this, "Preencha todos os campos.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Preencha todos os campos", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        String sessionId = MockDataSource.login(username, password);
+        Log.d(TAG, "Register iniciado: " + username);
 
-        if (sessionId != null) {
-            SessionManager.createSession(sessionId);
-            Toast.makeText(this, "Login bem-sucedido!", Toast.LENGTH_SHORT).show();
-            navigateToMainActivity();
-        } else {
-            Toast.makeText(this, "Credenciais inválidas.", Toast.LENGTH_LONG).show();
-        }
+        new Thread(() -> {
+            try {
+                UserDTO user = AuthService.register(username, password);
+
+                runOnUiThread(() -> {
+                    SessionManager.createSession(this, user.userId, user.username);
+                    Toast.makeText(this, "Conta criada com sucesso!", Toast.LENGTH_SHORT).show();
+                    startActivity(new Intent(this, MainActivity.class));
+                    finish();
+                });
+
+            } catch (Exception e) {
+                Log.e(TAG, "REGISTER ERROR", e);
+                runOnUiThread(() ->
+                        Toast.makeText(this, "Erro ao registar", Toast.LENGTH_LONG).show()
+                );
+            }
+        }).start();
     }
 
-    private void performRegistration() {
-        String username = usernameEditText.getText().toString().trim();
-        String password = passwordEditText.getText().toString().trim();
-
-        if (username.isEmpty() || password.isEmpty()) {
-            Toast.makeText(this, "Preencha todos os campos para registo.", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        boolean success = MockDataSource.registerUser(username, password);
-
-        if (success) {
-            Toast.makeText(this, "Registo bem-sucedido! Faça login agora.", Toast.LENGTH_LONG).show();
-            // Limpa os campos para o login
-            passwordEditText.setText("");
-        } else {
-            Toast.makeText(this, "Nome de utilizador já existe.", Toast.LENGTH_LONG).show();
-        }
-    }
-
-    private void navigateToMainActivity() {
-        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-        startActivity(intent);
-        finish(); // Fecha a tela de login para que o utilizador não possa voltar
-    }
 }
