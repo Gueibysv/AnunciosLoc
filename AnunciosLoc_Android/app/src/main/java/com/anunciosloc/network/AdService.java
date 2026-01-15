@@ -83,8 +83,9 @@ public class AdService {
         ad.horaPublicacao = json.getLong("horaPublicacao");
         ad.politicaTipo = json.getString("politicaTipo");
         ad.modoEntrega = json.getString("modoEntrega");
-        ad.localId =
-                json.getJSONObject("localDestino").getLong("id");
+        JSONObject localJson = json.getJSONObject("localDestino");
+        ad.localId = localJson.getLong("id");
+        ad.localNome = localJson.getString("nome");
 
         return ad;
     }
@@ -101,5 +102,47 @@ public class AdService {
 
         return map;
     }
+
+    public static List<AdDTO> getAvailableAds(
+            double latitude,
+            double longitude,
+            String username
+    ) throws Exception {
+
+        JSONObject body = new JSONObject();
+        body.put("latitude", latitude);
+        body.put("longitude", longitude);
+        body.put("username", username);
+
+        String response = ApiClient.post(
+                "/ads/available",
+                body.toString()
+        );
+
+        JSONArray array = new JSONArray(response);
+        List<AdDTO> ads = new ArrayList<>();
+
+        for (int i = 0; i < array.length(); i++) {
+            JSONObject json = array.getJSONObject(i);
+
+            AdDTO ad = new AdDTO();
+            ad.id = json.getLong("id");
+            ad.texto = json.getString("texto");
+            ad.editor = json.getString("editor");
+            ad.horaPublicacao = json.getLong("horaPublicacao");
+            ad.politicaTipo = json.getString("politicaTipo");
+            ad.modoEntrega = json.getString("modoEntrega");
+
+            // 👇 LOCAL DESTINO (objeto vindo do backend)
+            JSONObject localJson = json.getJSONObject("localDestino");
+            ad.localId = localJson.getLong("id");
+            ad.localNome = localJson.getString("nome");
+
+            ads.add(ad);
+        }
+
+        return ads;
+    }
+
 
 }

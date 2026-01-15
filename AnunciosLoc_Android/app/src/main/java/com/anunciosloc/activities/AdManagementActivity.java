@@ -15,6 +15,19 @@ import com.anunciosloc.dto.AdDTO;
 import com.anunciosloc.network.AdService;
 
 import java.util.List;
+import java.util.function.Consumer;
+
+import android.Manifest;
+import android.location.Location;
+import android.content.pm.PackageManager;
+
+import androidx.core.app.ActivityCompat;
+
+import com.anunciosloc.utils.SessionManager;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+
+
 
 public class AdManagementActivity extends AppCompatActivity {
 
@@ -37,27 +50,62 @@ public class AdManagementActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        loadAdsFromBackend();
+        getCurrentLocation(location -> {
+            loadAvailableAds(location);
+        });
     }
 
-    private void loadAdsFromBackend() {
+    private void getCurrentLocation(java.util.function.Consumer<Location> callback) {
+
+        FusedLocationProviderClient client =
+                LocationServices.getFusedLocationProviderClient(this);
+
+        if (ActivityCompat.checkSelfPermission(
+                this, Manifest.permission.ACCESS_FINE_LOCATION
+        ) != PackageManager.PERMISSION_GRANTED) {
+
+            Toast.makeText(this,
+                    "Permissão de localização não concedida",
+                    Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        client.getLastLocation()
+                .addOnSuccessListener(location -> {
+                    if (location != null) {
+                        callback.accept(location);
+                    } else {
+                        Toast.makeText(this,
+                                "Não foi possível obter localização",
+                                Toast.LENGTH_LONG).show();
+                    }
+                });
+    }
+
+
+    private void loadAvailableAds(Location location) {
 
         new Thread(() -> {
             try {
-                List<AdDTO> ads = AdService.getAllAds();
+                List<AdDTO> ads = AdService.getAvailableAds(
+                        location.getLatitude(),
+                        location.getLongitude(),
+                        SessionManager.getUsername(this)
+                );
 
-                runOnUiThread(() -> {
-                    AdAdapter adapter = new AdAdapter(ads);
-                    adsRecyclerView.setAdapter(adapter);
-                });
+                runOnUiThread(() ->
+                        adsRecyclerView.setAdapter(new AdAdapter(ads))
+                );
 
             } catch (Exception e) {
                 runOnUiThread(() ->
                         Toast.makeText(this,
-                                "Erro ao carregar anúncios",
+                                "Erro ao carregar anúncios disponíveis",
                                 Toast.LENGTH_LONG).show()
                 );
             }
         }).start();
     }
+
+
 }
