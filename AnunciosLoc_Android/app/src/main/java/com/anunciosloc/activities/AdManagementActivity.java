@@ -51,7 +51,10 @@ public class AdManagementActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         getCurrentLocation(location -> {
-            loadAvailableAds(location);
+            loadAvailableAds(
+                    location.getLatitude(),
+                    location.getLongitude()
+            );
         });
     }
 
@@ -83,13 +86,13 @@ public class AdManagementActivity extends AppCompatActivity {
     }
 
 
-    private void loadAvailableAds(Location location) {
+    private void loadAvailableAds(double lat, double lon) {
 
         new Thread(() -> {
             try {
                 List<AdDTO> ads = AdService.getAvailableAds(
-                        location.getLatitude(),
-                        location.getLongitude(),
+                        lat,
+                        lon,
                         SessionManager.getUsername(this)
                 );
 
@@ -100,12 +103,10 @@ public class AdManagementActivity extends AppCompatActivity {
             } catch (Exception e) {
                 runOnUiThread(() ->
                         Toast.makeText(this,
-                                "Erro ao carregar anúncios disponíveis",
+                                "Erro ao carregar anúncios",
                                 Toast.LENGTH_LONG).show()
                 );
             }
         }).start();
     }
-
-
 }

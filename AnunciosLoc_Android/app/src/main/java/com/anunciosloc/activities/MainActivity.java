@@ -93,84 +93,65 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private void setupLocationCallback() {
         locationCallback = new LocationCallback() {
             @Override
-            public void onLocationResult(@NonNull LocationResult locationResult) {
-                if (locationResult != null && !locationResult.getLocations().isEmpty()) {
-                    Location location = locationResult.getLocations().get(0);
-                    LatLng currentLatLng = new LatLng(location.getLatitude(), location.getLongitude());
+            public void onLocationResult(@NonNull LocationResult result) {
 
-                    // Move a câmara para a localização atual
-                    if (mMap != null) {
-                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, DEFAULT_ZOOM));
-                    }
+                Location location = result.getLastLocation();
+                if (location == null) return;
 
-                    // Marca que a localização foi obtida com sucesso
-                    if (!locationObtained) {
-                        locationObtained = true;
-                        Toast.makeText(MainActivity.this, "Localização obtida com sucesso!", Toast.LENGTH_SHORT).show();
+                LatLng pos = new LatLng(
+                        location.getLatitude(),
+                        location.getLongitude()
+                );
 
-                        // Para de receber atualizações após obter a primeira localização
-                        stopLocationUpdates();
-                    }
+                if (mMap != null) {
+                    mMap.moveCamera(
+                            CameraUpdateFactory.newLatLngZoom(pos, DEFAULT_ZOOM)
+                    );
+                }
+
+                if (!locationObtained) {
+                    locationObtained = true;
+
+                    Toast.makeText(
+                            MainActivity.this,
+                            "Localização real obtida",
+                            Toast.LENGTH_SHORT
+                    ).show();
+
+                    onLocationReady(location);
+                    stopLocationUpdates();
                 }
             }
         };
     }
 
+
+
     /**
      * Verifica a permissão de localização e obtém a localização do dispositivo.
      */
     private void checkLocationPermissionAndGetLocation() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
-            // Solicita a permissão se ainda não foi concedida
-            ActivityCompat.requestPermissions(this,
+        if (ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_FINE_LOCATION
+        ) != PackageManager.PERMISSION_GRANTED) {
+
+            ActivityCompat.requestPermissions(
+                    this,
                     new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                    LOCATION_PERMISSION_REQUEST_CODE);
+                    LOCATION_PERMISSION_REQUEST_CODE
+            );
         } else {
-            // Permissão já foi concedida
-            try {
-                if (mMap != null) {
-                    mMap.setMyLocationEnabled(true);
-                }
-                getDeviceLocation();
-            } catch (SecurityException e) {
-                Toast.makeText(this, "Erro de permissão de localização.", Toast.LENGTH_SHORT).show();
-            }
+            requestLocationUpdates();
         }
     }
+
 
     /**
      * Obtém a localização do dispositivo usando requestLocationUpdates.
      * Este método é mais robusto que getLastLocation() pois obtém a localização em tempo real.
      */
-    private void getDeviceLocation() {
-        try {
-            // Primeiro, tenta obter a última localização conhecida
-            fusedLocationClient.getLastLocation()
-                    .addOnSuccessListener(this, location -> {
-                        if (location != null) {
-                            // Se conseguir a última localização, usa-a
-                            LatLng currentLatLng = new LatLng(location.getLatitude(), location.getLongitude());
-                            if (mMap != null) {
-                                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, DEFAULT_ZOOM));
-                            }
-                            locationObtained = true;
-                            Toast.makeText(MainActivity.this, "Localização obtida!", Toast.LENGTH_SHORT).show();
-                        } else {
-                            // Se não conseguir, solicita atualizações de localização em tempo real
-                            requestLocationUpdates();
-                        }
-                    })
-                    .addOnFailureListener(e -> {
-                        // Se falhar, usa a localização padrão e solicita atualizações
-                        useDefaultLocation();
-                        requestLocationUpdates();
-                    });
-        } catch (SecurityException e) {
-            Toast.makeText(this, "Erro de permissão de localização.", Toast.LENGTH_SHORT).show();
-            useDefaultLocation();
-        }
-    }
+
 
     /**
      * Solicita atualizações de localização em tempo real.
@@ -248,7 +229,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 if (mMap != null) {
                     try {
                         mMap.setMyLocationEnabled(true);
-                        getDeviceLocation();
                     } catch (SecurityException e) {
                         Toast.makeText(this, "Erro ao ativar localização no mapa.", Toast.LENGTH_SHORT).show();
                     }
@@ -311,6 +291,11 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
 
-
+    private void onLocationReady(Location location) {
+        Intent intent = new Intent(this, AdManagementActivity.class);
+        intent.putExtra("LAT", location.getLatitude());
+        intent.putExtra("LON", location.getLongitude());
+        startActivity(intent);
+    }
 
 }
